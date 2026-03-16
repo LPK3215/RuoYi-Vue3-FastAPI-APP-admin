@@ -23,26 +23,20 @@ export function Sidebar() {
         </div>
         <div className="ds-brandText">
           <div className="ds-brandTitle">{import.meta.env.VITE_APP_TITLE || 'DeskOps'}</div>
-          <div className="ds-brandSub">Desktop Web · FastAPI</div>
+          <div className="ds-brandSub">管理后台</div>
         </div>
       </div>
 
       <nav className="ds-nav">
         <div className="ds-navGroup">
           <div className="ds-navGroupTitle">概览</div>
-          <SideItem to="/admin/dashboard" label="仪表盘" hint="dashboard" />
+          <SideItem to="/admin/dashboard" label="仪表盘" hint="系统概览" />
         </div>
         <div className="ds-navGroup">
           <div className="ds-navGroupTitle">系统</div>
-          <SideItem to="/admin/system/users" label="用户列表" hint="table render" />
+          <SideItem to="/admin/system/users" label="用户列表" hint="账号管理" />
         </div>
       </nav>
-
-      <div className="ds-sideFooter">
-        <div className="ds-sideFooterLine">
-          API: <span className="ds-mono">{import.meta.env.VITE_API_BASE || '/dev-api'}</span>
-        </div>
-      </div>
     </aside>
   )
 }

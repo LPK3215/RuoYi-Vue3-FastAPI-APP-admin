@@ -12,12 +12,12 @@ export function PortalLayout() {
             <div className="ds-portalBrandTitle">
               {import.meta.env.VITE_APP_TITLE || 'SoftwareHub'}
             </div>
-            <div className="ds-portalBrandSub">软件信息展示 · Portal</div>
+            <div className="ds-portalBrandSub">软件库 · Portal</div>
           </div>
         </div>
 
         <div className="ds-portalHeaderRight">
-          <div className="ds-portalHeaderHint">数据来源：FastAPI Portal API</div>
+          <div className="ds-portalHeaderHint">支持搜索与筛选 · 无需登录即可使用</div>
         </div>
       </header>
 
@@ -27,4 +27,3 @@ export function PortalLayout() {
     </div>
   )
 }
-

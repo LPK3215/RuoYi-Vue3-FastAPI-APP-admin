@@ -84,7 +84,7 @@ export function LoginPage() {
       <div className="ds-loginCard">
         <div className="ds-loginHeader">
           <div className="ds-loginTitle">DeskOps</div>
-          <div className="ds-loginSubtitle">电脑端 Web 项目 · 调用后端接口 · 渲染数据</div>
+          <div className="ds-loginSubtitle">管理后台登录 · 仅限授权用户</div>
         </div>
 
         <div className="ds-loginForm">
@@ -145,7 +145,7 @@ export function LoginPage() {
                   />
                 ) : (
                   <span className="ds-captchaImgPlaceholder">
-                    {captchaFailed ? '后端未启动' : '加载中…'}
+                    {captchaFailed ? '服务暂不可用' : '加载中…'}
                   </span>
                 )}
               </button>
@@ -163,9 +163,7 @@ export function LoginPage() {
 
           {captchaFailed ? (
             <div className="ds-alert ds-alert--error" role="alert">
-              验证码获取失败：请确认后端已启动（默认{' '}
-              <span className="ds-mono">http://127.0.0.1:9099</span>
-              ），然后点击验证码图片重试。
+              验证码服务暂不可用，请稍后重试或联系管理员。
             </div>
           ) : null}
 
@@ -185,22 +183,17 @@ export function LoginPage() {
         </div>
 
         <div className="ds-loginMeta">
-          <div>
-            后端：<span className="ds-mono">http://127.0.0.1:9099</span>
-          </div>
-          <div>
-            代理前缀：<span className="ds-mono">{import.meta.env.VITE_API_BASE || '/dev-api'}</span>
-          </div>
+          <div>如需开通账号或重置密码，请联系系统管理员。</div>
         </div>
       </div>
 
       <div className="ds-loginAside">
         <div className="ds-loginAsideCard">
-          <div className="ds-loginAsideTitle">这个项目解决什么？</div>
+          <div className="ds-loginAsideTitle">登录后可以做什么？</div>
           <ul className="ds-loginAsideList">
-            <li>1) 调用后端接口拿到数据</li>
-            <li>2) 把数据渲染成桌面端可用 UI（表格/筛选/分页/详情）</li>
-            <li>3) 统一处理鉴权、错误、加载态</li>
+            <li>1) 查看系统概览</li>
+            <li>2) 管理用户账号</li>
+            <li>3) 安全退出登录</li>
           </ul>
         </div>
       </div>

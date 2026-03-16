@@ -2,6 +2,7 @@ import {
   getPortalSoftwareCategories,
   getPortalSoftwareFacets,
   listPortalSoftware,
+  type PortalSoftwareCategory,
   type PortalSoftwareListQuery,
   type PortalSoftwareListItem,
 } from '@/api/portalSoftware'
@@ -17,6 +18,7 @@ import { useMemo, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 
 const DEFAULT_PAGE_SIZE = 18
+const EMPTY_CATEGORIES: PortalSoftwareCategory[] = []
 
 type Filters = {
   keyword: string
@@ -126,6 +128,27 @@ export function SoftwareHubPage() {
     [pageNum, pageSize, appliedFilters],
   )
 
+  const effectiveQueryWithoutCategory = useMemo(() => {
+    return compactQuery({
+      pageNum: 1,
+      pageSize: 1,
+      filters: {
+        keyword: appliedFilters.keyword,
+        categoryId: '',
+        openSource: appliedFilters.openSource,
+        license: appliedFilters.license,
+        tag: appliedFilters.tag,
+        platform: appliedFilters.platform,
+      },
+    })
+  }, [
+    appliedFilters.keyword,
+    appliedFilters.openSource,
+    appliedFilters.license,
+    appliedFilters.tag,
+    appliedFilters.platform,
+  ])
+
   const categoriesQuery = useQuery({
     queryKey: ['portal', 'software', 'categories'],
     queryFn: getPortalSoftwareCategories,
@@ -142,11 +165,23 @@ export function SoftwareHubPage() {
     placeholderData: keepPreviousData,
   })
 
-  const categories = categoriesQuery.data?.data ?? []
+  const listTotalWithoutCategoryQuery = useQuery({
+    queryKey: ['portal', 'software', 'list-total-without-category', effectiveQueryWithoutCategory],
+    queryFn: () => listPortalSoftware(effectiveQueryWithoutCategory),
+    placeholderData: keepPreviousData,
+    enabled: Boolean(appliedFilters.categoryId),
+  })
+
+  const categories = categoriesQuery.data?.data ?? EMPTY_CATEGORIES
   const facets = facetsQuery.data?.data
   const rows = listQuery.data?.rows ?? []
   const total = listQuery.data?.total ?? 0
   const pageCount = Math.max(1, Math.ceil(total / pageSize))
+
+  const libraryTotal = useMemo(() => {
+    if (!categoriesQuery.data) return null
+    return categories.reduce((sum, c) => sum + (c.softwareCount ?? 0), 0)
+  }, [categories, categoriesQuery.data])
 
   const activeFilterCount = useMemo(() => {
     let c = 0
@@ -162,12 +197,36 @@ export function SoftwareHubPage() {
   const showLoading =
     categoriesQuery.isLoading || facetsQuery.isLoading || (listQuery.isLoading && !listQuery.data)
 
+  const allCategoryTotalText = useMemo(() => {
+    if (!appliedFilters.categoryId) {
+      if (listQuery.isFetching && !listQuery.data) return '…'
+      return String(total)
+    }
+    if (listTotalWithoutCategoryQuery.isError) return '—'
+    if (listTotalWithoutCategoryQuery.isFetching && !listTotalWithoutCategoryQuery.data) return '…'
+    return String(listTotalWithoutCategoryQuery.data?.total ?? 0)
+  }, [
+    appliedFilters.categoryId,
+    listQuery.data,
+    listQuery.isFetching,
+    listTotalWithoutCategoryQuery.data,
+    listTotalWithoutCategoryQuery.isError,
+    listTotalWithoutCategoryQuery.isFetching,
+    total,
+  ])
+
+  const libraryTotalText = useMemo(() => {
+    if (categoriesQuery.isFetching && !categoriesQuery.data) return '…'
+    if (libraryTotal == null) return '—'
+    return String(libraryTotal)
+  }, [categoriesQuery.data, categoriesQuery.isFetching, libraryTotal])
+
   return (
     <div className="ds-portalPad">
       <section className="ds-portalHero" aria-label="SoftwareHub">
         <div className="ds-portalHeroText">
           <div className="ds-portalEyebrow ds-mono">SOFTWAREHUB · PORTAL</div>
-          <h1 className="ds-portalTitle">把数据库里的软件信息，直接变成漂亮的展示页</h1>
+          <h1 className="ds-portalTitle">一站式软件库，快速查找与下载</h1>
           <div className="ds-portalLead">
             分类、标签、许可证、平台下载，一站式浏览。无需登录，打开就是软件库。
           </div>
@@ -218,7 +277,7 @@ export function SoftwareHubPage() {
 
           <div className="ds-portalHeroMeta">
             <div className="ds-portalStat">
-              <div className="ds-portalStatKey">总软件数</div>
+              <div className="ds-portalStatKey">当前结果</div>
               <div className="ds-portalStatVal ds-mono">
                 {listQuery.isFetching && !listQuery.data ? '…' : String(total)}
               </div>
@@ -228,8 +287,8 @@ export function SoftwareHubPage() {
               <div className="ds-portalStatVal ds-mono">{activeFilterCount || 0}</div>
             </div>
             <div className="ds-portalStat">
-              <div className="ds-portalStatKey">数据接口</div>
-              <div className="ds-portalStatVal ds-mono">/portal/software/*</div>
+              <div className="ds-portalStatKey">收录总数</div>
+              <div className="ds-portalStatVal ds-mono">{libraryTotalText}</div>
             </div>
           </div>
         </div>
@@ -257,7 +316,7 @@ export function SoftwareHubPage() {
                 }}
               >
                 <span>全部</span>
-                <span className="ds-catCount ds-mono">{String(total || '—')}</span>
+                <span className="ds-catCount ds-mono">{allCategoryTotalText}</span>
               </button>
 
               {categoriesQuery.isError ? (

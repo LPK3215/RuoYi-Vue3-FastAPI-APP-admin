@@ -63,13 +63,13 @@ export function SoftwareDetailPage() {
     const list = data?.downloads ? [...data.downloads] : []
     list.sort((a, b) => (a.sort ?? 0) - (b.sort ?? 0))
     return list
-  }, [data?.downloads])
+  }, [data])
 
   const resources = useMemo(() => {
     const list = data?.resources ? [...data.resources] : []
     list.sort((a, b) => (a.sort ?? 0) - (b.sort ?? 0))
     return list
-  }, [data?.resources])
+  }, [data])
 
   const tags = splitTags(data?.tags)
   const name = safeLabel(data?.softwareName, `#${softwareId}`)
@@ -260,4 +260,3 @@ export function SoftwareDetailPage() {
     </div>
   )
 }
-

@@ -4,8 +4,8 @@ export function Topbar(props: { userName?: string; onLogout: () => void }) {
   return (
     <header className="ds-topbar">
       <div className="ds-topbarLeft">
-        <div className="ds-topbarTitle">数据渲染台</div>
-        <div className="ds-topbarHint">用接口数据驱动桌面端 UI（表格/筛选/分页/详情）</div>
+        <div className="ds-topbarTitle">管理后台</div>
+        <div className="ds-topbarHint">系统概览与账号管理</div>
       </div>
       <div className="ds-topbarRight">
         <div className="ds-topbarUser">
@@ -19,4 +19,3 @@ export function Topbar(props: { userName?: string; onLogout: () => void }) {
     </header>
   )
 }
-
