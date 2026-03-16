@@ -2,7 +2,12 @@
     <img alt="logo" src="https://oscimg.oschina.net/oscnet/up-d3d0a9303e11d522a06cd263f3079027715.png">
 </h1>
 <h1 align="center" style="margin: 30px 0 30px; font-weight: bold;">RuoYi-Vue3-FastAPI</h1>
-<h4 align="center">基于RuoYi-Vue3+FastAPI前后端分离的快速开发框架</h4>
+<h4 align="center">基于 RuoYi-Vue3+FastAPI 前后端分离的快速开发框架</h4>
+
+> **⚠️ 二次开发声明**  
+> 本项目基于原 RuoYi-Vue3-FastAPI 框架进行二次开发，已根据实际业务需求进行了定制化修改。  
+> 如需使用原始框架，请访问：[Gitee](https://gitee.com/insistence2022/RuoYi-Vue3-FastAPI) | [GitHub](https://github.com/insistence/RuoYi-Vue3-FastAPI)
+
 <p align="center">
     <a href="https://gitee.com/insistence2022/RuoYi-Vue3-FastAPI/stargazers">
         <img alt="Gitee" src="https://gitee.com/insistence2022/RuoYi-Vue3-FastAPI/badge/star.svg?theme=dark">
@@ -65,19 +70,19 @@
 
 ## 平台简介
 
-RuoYi-Vue3-FastAPI是一套全部开源的快速开发平台，毫无保留给个人及企业免费使用。
+RuoYi-Vue3-FastAPI 是一套全部开源的快速开发平台，毫无保留给个人及企业免费使用。
 
-* 前端采用Vue3、Element Plus，基于<u>[RuoYi-Vue3](https://github.com/yangzongzhuan/RuoYi-Vue3)</u>前端项目修改。
-* 移动端采用uni-app、Vue3、Vite，内置tailwindcss，基于<u>[RuoYi-App](https://github.com/yangzongzhuan/RuoYi-App)</u>项目修改。
-* 后端采用FastAPI、sqlalchemy、MySQL（PostgreSQL）、Redis、OAuth2 & Jwt。
-* 权限认证使用OAuth2 & Jwt，支持多终端认证系统。
+* 前端采用 Vue3、Element Plus，基于<u>[RuoYi-Vue3](https://github.com/yangzongzhuan/RuoYi-Vue3)</u>前端项目修改。
+* 移动端采用 uni-app、Vue3、Vite，内置 tailwindcss，基于<u>[RuoYi-App](https://github.com/yangzongzhuan/RuoYi-App)</u>项目修改。
+* 后端采用 FastAPI、sqlalchemy、MySQL（PostgreSQL）、Redis、OAuth2 & Jwt。
+* 权限认证使用 OAuth2 & Jwt，支持多终端认证系统。
 * 支持加载动态权限菜单，多方式轻松权限控制。
-* Vue2版本：
-  * Gitte仓库地址：<https://gitee.com/insistence2022/RuoYi-Vue-FastAPI>
-  * GitHub仓库地址：<https://github.com/insistence/RuoYi-Vue-FastAPI>
-* 纯Python版本：
-  * Gitte仓库地址：<https://gitee.com/insistence2022/dash-fastapi-admin>
-  * GitHub仓库地址：<https://github.com/insistence/Dash-FastAPI-Admin>
+* Vue2 版本：
+  * Gitte 仓库地址：<https://gitee.com/insistence2022/RuoYi-Vue-FastAPI>
+  * GitHub 仓库地址：<https://github.com/insistence/RuoYi-Vue-FastAPI>
+* 纯 Python 版本：
+  * Gitte 仓库地址：<https://gitee.com/insistence2022/dash-fastapi-admin>
+  * GitHub 仓库地址：<https://github.com/insistence/Dash-FastAPI-Admin>
 * 特别鸣谢：<u>[RuoYi-Vue3](https://github.com/yangzongzhuan/RuoYi-Vue3)</u>、<u>[RuoYi-App](https://github.com/yangzongzhuan/RuoYi-App)</u>
 
 ## 内置功能
@@ -94,12 +99,12 @@ RuoYi-Vue3-FastAPI是一套全部开源的快速开发平台，毫无保留给�
 10. 登录日志：系统登录日志记录查询包含登录异常。
 11. 在线用户：当前系统中活跃用户状态监控。
 12. 定时任务：在线（添加、修改、删除）任务调度包含执行结果日志。
-13. 服务监控：监视当前系统CPU、内存、磁盘、堆栈等相关信息。
+13. 服务监控：监视当前系统 CPU、内存、磁盘、堆栈等相关信息。
 14. 缓存监控：对系统的缓存信息查询，命令统计等。
-15. 在线构建器：拖动表单元素生成相应的HTML代码。
-16. 系统接口：根据业务代码自动生成相关的api接口文档。
+15. 在线构建器：拖动表单元素生成相应的 HTML 代码。
+16. 系统接口：根据业务代码自动生成相关的 api 接口文档。
 17. 代码生成：配置数据库表信息一键生成前后端代码（python、sql、vue、js），支持下载。
-18. AI管理：提供AI模型管理和AI对话功能。
+18. AI 管理：提供 AI 模型管理和 AI 对话功能。
 
 ## 演示图
 
@@ -135,7 +140,7 @@ RuoYi-Vue3-FastAPI是一套全部开源的快速开发平台，毫无保留给�
         <td>
             <img alt="dict" src="https://gitee.com/insistence2022/ruoyi-fastapi-pictures/raw/master/vue3/web/dict.png">
         </td>
-    </tr>  
+    </tr>
     <tr>
         <td>
             <img alt="config" src="https://gitee.com/insistence2022/ruoyi-fastapi-pictures/raw/master/vue3/web/config.png">
@@ -217,7 +222,7 @@ RuoYi-Vue3-FastAPI是一套全部开源的快速开发平台，毫无保留给�
 
 * *账号：admin*
 * *密码：admin123*
-* 演示地址：<a href="https://vfadmin.insistence.tech">vfadmin管理系统<a>
+* 演示地址：<a href="https://vfadmin.insistence.tech">vfadmin 管理系统<a>
 
 ## 项目开发及发布相关
 
@@ -272,17 +277,17 @@ pnpm dev:mp-weixin
 # 进入后端目录
 cd ruoyi-fastapi-backend
 
-# 如果使用的是MySQL数据库，请执行以下命令安装项目依赖环境
+# 如果使用的是 MySQL 数据库，请执行以下命令安装项目依赖环境
 pip3 install -r requirements.txt
-# 如果使用的是PostgreSQL数据库，请执行以下命令安装项目依赖环境
+# 如果使用的是 PostgreSQL 数据库，请执行以下命令安装项目依赖环境
 pip3 install -r requirements-pg.txt
 
 # 配置环境
-在.env.dev文件中配置开发环境的数据库和redis
+在.env.dev 文件中配置开发环境的数据库和 redis
 
-# 运行sql文件
-1.新建数据库ruoyi-fastapi(默认，可修改)
-2.如果使用的是MySQL数据库，使用命令或数据库连接工具运行sql文件夹下的ruoyi-fastapi.sql；如果使用的是PostgreSQL数据库，使用命令或数据库连接工具运行sql文件夹下的ruoyi-fastapi-pg.sql
+# 运行 sql 文件
+1.新建数据库 ruoyi-fastapi(默认，可修改)
+2.如果使用的是 MySQL 数据库，使用命令或数据库连接工具运行 sql 文件夹下的 ruoyi-fastapi.sql；如果使用的是 PostgreSQL 数据库，使用命令或数据库连接工具运行 sql 文件夹下的 ruoyi-fastapi-pg.sql
 
 # 运行后端
 python3 app.py --env=dev
@@ -315,23 +320,23 @@ npm run build:prod 或 yarn build:prod
 
 ```bash
 # 配置环境
-在.env.prod文件中配置生产环境的数据库和redis
+在.env.prod 文件中配置生产环境的数据库和 redis
 
 # 运行后端
 python3 app.py --env=prod
 ```
 
-### Docker Compose部署方式
+### Docker Compose 部署方式
 
 > ⚠️ **警告：** 默认未做数据持久化配置，请注意数据备份或自行配置持久化
 
-#### MySQL版本
+#### MySQL 版本
 
 ```bash
 docker compose -f docker-compose.my.yml up -d --build
 ```
 
-#### PostgreSQL版本
+#### PostgreSQL 版本
 
 ```bash
 docker compose -f docker-compose.pg.yml up -d --build
@@ -339,7 +344,7 @@ docker compose -f docker-compose.pg.yml up -d --build
 
 ## 交流与赞助
 
-如果有对本项目及FastAPI感兴趣的朋友，欢迎加入知识星球一起交流学习，让我们一起变得更强。如果你觉得这个项目帮助到了你，你可以请作者喝杯咖啡表示鼓励☕。扫描下面微信二维码添加微信备注VF-Admin即可进群。
+如果有对本项目及 FastAPI 感兴趣的朋友，欢迎加入知识星球一起交流学习，让我们一起变得更强。如果你觉得这个项目帮助到了你，你可以请作者喝杯咖啡表示鼓励☕。扫描下面微信二维码添加微信备注 VF-Admin 即可进群。
 <table>
     <tr>
         <td>
@@ -355,3 +360,7 @@ docker compose -f docker-compose.pg.yml up -d --build
         </td>
     </tr>
 </table>
+
+## 版权说明
+
+本项目基于 MIT 协议开源，允许商业使用，但请保留原作者版权信息。二次开发版本请自行标注。
