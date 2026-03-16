@@ -11,7 +11,9 @@ body {
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-  font-family: Helvetica Neue, Helvetica, PingFang SC, Hiragino Sans GB, Microsoft YaHei, Arial, sans-serif;
+  font-family: var(--app-font-sans);
+  background: var(--app-bg);
+  color: var(--el-text-color-primary);
 }
 
 label {
@@ -25,6 +27,22 @@ html {
 
 #app {
   height: 100%;
+}
+
+/* Layout surfaces */
+#app .main-container,
+#app .app-main {
+  background: var(--app-bg);
+}
+
+/* Element Plus: make cards feel like a product, not a template */
+.el-card {
+  border-color: var(--app-border);
+  border-radius: var(--app-radius-md);
+}
+
+.el-card__header {
+  border-bottom-color: var(--app-border);
 }
 
 *,

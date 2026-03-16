@@ -70,8 +70,9 @@ import Cookies from "js-cookie";
 import { encrypt, decrypt } from "@/utils/jsencrypt";
 import useUserStore from '@/store/modules/user'
 import defaultSettings from '@/settings'
+import { APP_TITLE } from '@/config/brand'
 
-const title = import.meta.env.VITE_APP_TITLE;
+const title = APP_TITLE;
 const footerContent = defaultSettings.footerContent
 const userStore = useUserStore();
 const route = useRoute();

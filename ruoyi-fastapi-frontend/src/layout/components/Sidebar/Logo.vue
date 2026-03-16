@@ -17,6 +17,7 @@
 import logo from '@/assets/logo/logo.png'
 import useSettingsStore from '@/store/modules/settings'
 import variables from '@/assets/styles/variables.module.scss'
+import { APP_LOGO_TEXT } from '@/config/brand'
 
 defineProps({
   collapse: {
@@ -25,7 +26,7 @@ defineProps({
   }
 })
 
-const title = import.meta.env.VITE_APP_TITLE;
+const title = APP_LOGO_TEXT;
 const settingsStore = useSettingsStore();
 const sideTheme = computed(() => settingsStore.sideTheme);
 

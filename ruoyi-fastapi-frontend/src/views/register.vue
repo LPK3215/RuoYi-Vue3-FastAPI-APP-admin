@@ -79,8 +79,9 @@
 import { ElMessageBox } from "element-plus";
 import { getCodeImg, register } from "@/api/login";
 import defaultSettings from '@/settings'
+import { APP_TITLE } from '@/config/brand'
 
-const title = import.meta.env.VITE_APP_TITLE;
+const title = APP_TITLE;
 const footerContent = defaultSettings.footerContent
 const router = useRouter();
 const { proxy } = getCurrentInstance();

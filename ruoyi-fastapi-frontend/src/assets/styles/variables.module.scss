@@ -9,10 +9,10 @@ $yellow: #FEC171;
 $panGreen: #30B08F;
 
 // 默认主题变量
-$menuText: #bfcbd9;
-$menuActiveText: #409eff;
-$menuBg: #304156;
-$menuHover: #263445;
+$menuText: #cbd5e1;
+$menuActiveText: #0ea5e9;
+$menuBg: #0b1220;
+$menuHover: rgba(255, 255, 255, 0.06);
 
 // 浅色主题theme-light
 $menuLightBg: #ffffff;
@@ -25,14 +25,14 @@ $base-sidebar-width: 200px;
 $sideBarWidth: 200px;
 
 // 菜单暗色变量
-$base-menu-color: #bfcbd9;
+$base-menu-color: $menuText;
 $base-menu-color-active: #f4f4f5;
-$base-menu-background: #304156;
-$base-sub-menu-background: #1f2d3d;
-$base-sub-menu-hover: #001528;
+$base-menu-background: $menuBg;
+$base-sub-menu-background: #07101e;
+$base-sub-menu-hover: rgba(255, 255, 255, 0.08);
 
 // 组件变量
-$--color-primary: #409EFF;
+$--color-primary: #0ea5e9;
 $--color-success: #67C23A;
 $--color-warning: #E6A23C;
 $--color-danger: #F56C6C;
@@ -67,10 +67,32 @@ $--color-info: #909399;
 
 // CSS变量定义
 :root {
+  /* App tokens (light) */
+  --app-bg: #f6f7fb;
+  --app-surface: #ffffff;
+  --app-surface-2: rgba(255, 255, 255, 0.72);
+  --app-border: rgba(15, 23, 42, 0.08);
+  --app-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+  --app-radius-lg: 16px;
+  --app-radius-md: 12px;
+  --app-font-sans: "HarmonyOS Sans SC", "MiSans", "Alibaba PuHuiTi", "PingFang SC",
+    "Microsoft YaHei", "Noto Sans SC", sans-serif;
+  --app-font-mono: "JetBrains Mono", "Fira Code", Consolas, "Liberation Mono",
+    Menlo, monospace;
+
+  --scrollbar-track: rgba(15, 23, 42, 0.06);
+  --scrollbar-thumb: rgba(15, 23, 42, 0.22);
+  --scrollbar-thumb-hover: rgba(15, 23, 42, 0.34);
+
+  /* Element Plus tweaks */
+  --el-border-radius-base: 10px;
+  --el-bg-color-page: var(--app-bg);
+
   /* 亮色模式变量 */
   --sidebar-bg: #{$menuBg};
   --sidebar-text: #{$menuText};
   --menu-hover: #{$menuHover};
+  --menu-active-text: var(--el-color-primary);
   
   --navbar-bg: #ffffff;
   --navbar-text: #303133;
@@ -83,26 +105,37 @@ $--color-info: #909399;
 // 暗黑模式变量
 html.dark {
   /* 默认通用 */
-  --el-bg-color: #141414;
-  --el-bg-color-overlay: #1d1e1f;
+  --el-bg-color: #0b0f14;
+  --el-bg-color-overlay: #111827;
   --el-text-color-primary: #ffffff;
   --el-text-color-regular: #d0d0d0;
   --el-border-color: #434343;
   --el-border-color-light: #434343;
 
   /* primary */
-  --primary-bg: #18212b;
+  --primary-bg: #0b1220;
 
   /* 侧边栏 */
-  --sidebar-bg: #141414;
+  --sidebar-bg: #0b1220;
   --sidebar-text: #ffffff;
-  --menu-hover: #2d2d2d;
-  --menu-active-text: #{$menuActiveText};
+  --menu-hover: rgba(255, 255, 255, 0.08);
+  --menu-active-text: var(--el-color-primary);
 
   /* 顶部导航栏 */
-  --navbar-bg: #141414;
+  --navbar-bg: #0b1220;
   --navbar-text: #ffffff;
-  --navbar-hover: #141414;
+  --navbar-hover: rgba(255, 255, 255, 0.06);
+
+  /* App tokens (dark) */
+  --app-bg: #070a10;
+  --app-surface: #0b1220;
+  --app-surface-2: rgba(11, 18, 32, 0.72);
+  --app-border: rgba(255, 255, 255, 0.10);
+  --app-shadow: 0 18px 44px rgba(0, 0, 0, 0.55);
+
+  --scrollbar-track: rgba(255, 255, 255, 0.06);
+  --scrollbar-thumb: rgba(255, 255, 255, 0.18);
+  --scrollbar-thumb-hover: rgba(255, 255, 255, 0.28);
 
   /* 标签栏 */
   --tags-bg: #141414;
