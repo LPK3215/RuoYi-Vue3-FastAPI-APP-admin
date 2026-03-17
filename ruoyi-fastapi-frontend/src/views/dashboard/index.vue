@@ -48,7 +48,7 @@
         <div class="hero__note">
           <span class="hero__noteLabel">提示</span>
           <span class="hero__noteText">
-            首页展示的数据来自你现有接口（软件分类/软件列表），可直接替换为你的业务看板接口。
+            点击 KPI / 维度分布 / 数据质量卡片，可直接跳转到「软件列表」并自动带筛选，快速定位并修复数据。
           </span>
         </div>
       </div>
@@ -276,6 +276,153 @@
         </el-card>
       </el-col>
     </el-row>
+
+    <el-row :gutter="16" class="grid">
+      <el-col :xs="24" :lg="14">
+        <el-card class="panel" shadow="never">
+          <template #header>
+            <div class="panel__header">
+              <span class="panel__title">维度分布</span>
+              <span class="panel__meta">点击任意项可跳转筛选</span>
+            </div>
+          </template>
+          <div class="panel__body">
+            <el-skeleton v-if="loading.kpi" animated :rows="4" />
+            <el-empty
+              v-else-if="
+                !((facets.licenses || []).length || (facets.tags || []).length || (facets.platforms || []).length)
+              "
+              description="暂无统计"
+            />
+            <div v-else class="facetGrid">
+              <div class="facetGroup">
+                <div class="facetGroup__title">许可证</div>
+                <button
+                  v-for="item in (facets.licenses || []).slice(0, 6)"
+                  :key="`lic_${item.value}`"
+                  class="facetItem"
+                  type="button"
+                  :style="{ '--pct': facetPct(item.count, facetMax.licenses) }"
+                  @click="goFacet('license', item.value)"
+                >
+                  <span class="facetItem__name" :title="item.value">{{ item.value }}</span>
+                  <span class="facetItem__count">{{ item.count }}</span>
+                </button>
+              </div>
+
+              <div class="facetGroup">
+                <div class="facetGroup__title">标签</div>
+                <button
+                  v-for="item in (facets.tags || []).slice(0, 6)"
+                  :key="`tag_${item.value}`"
+                  class="facetItem facetItem--tag"
+                  type="button"
+                  :style="{ '--pct': facetPct(item.count, facetMax.tags) }"
+                  @click="goFacet('tag', item.value)"
+                >
+                  <span class="facetItem__name" :title="item.value">{{ item.value }}</span>
+                  <span class="facetItem__count">{{ item.count }}</span>
+                </button>
+              </div>
+
+              <div class="facetGroup">
+                <div class="facetGroup__title">平台</div>
+                <button
+                  v-for="item in (facets.platforms || []).slice(0, 6)"
+                  :key="`plat_${item.value}`"
+                  class="facetItem facetItem--platform"
+                  type="button"
+                  :style="{ '--pct': facetPct(item.count, facetMax.platforms) }"
+                  @click="goFacet('platform', item.value)"
+                >
+                  <span class="facetItem__name" :title="item.value">{{ item.value }}</span>
+                  <span class="facetItem__count">{{ item.count }}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </el-card>
+      </el-col>
+
+      <el-col :xs="24" :lg="10">
+        <el-card class="panel" shadow="never">
+          <template #header>
+            <div class="panel__header">
+              <span class="panel__title">数据质量</span>
+              <span class="panel__meta">点击可跳转到软件列表修复</span>
+            </div>
+          </template>
+          <div class="panel__body">
+            <el-skeleton v-if="loading.kpi" animated :rows="4" />
+            <div v-else class="qualityGrid">
+              <button
+                class="qualityItem"
+                :class="{ 'is-warn': quality.missingDownloads > 0 }"
+                type="button"
+                @click="goQuality('downloads')"
+              >
+                <span class="qualityItem__label">缺下载配置</span>
+                <span class="qualityItem__value">{{ quality.missingDownloads }}</span>
+              </button>
+              <button
+                class="qualityItem"
+                :class="{ 'is-warn': quality.missingLicense > 0 }"
+                type="button"
+                @click="goQuality('license')"
+              >
+                <span class="qualityItem__label">缺许可证</span>
+                <span class="qualityItem__value">{{ quality.missingLicense }}</span>
+              </button>
+              <button
+                class="qualityItem"
+                :class="{ 'is-warn': quality.missingIcon > 0 }"
+                type="button"
+                @click="goQuality('icon')"
+              >
+                <span class="qualityItem__label">缺图标</span>
+                <span class="qualityItem__value">{{ quality.missingIcon }}</span>
+              </button>
+              <button
+                class="qualityItem"
+                :class="{ 'is-warn': quality.missingTags > 0 }"
+                type="button"
+                @click="goQuality('tags')"
+              >
+                <span class="qualityItem__label">缺标签</span>
+                <span class="qualityItem__value">{{ quality.missingTags }}</span>
+              </button>
+              <button
+                class="qualityItem"
+                :class="{ 'is-warn': quality.missingShortDesc > 0 }"
+                type="button"
+                @click="goQuality('shortDesc')"
+              >
+                <span class="qualityItem__label">缺简述</span>
+                <span class="qualityItem__value">{{ quality.missingShortDesc }}</span>
+              </button>
+              <button
+                class="qualityItem"
+                :class="{ 'is-warn': quality.missingOfficialUrl > 0 }"
+                type="button"
+                @click="goQuality('officialUrl')"
+              >
+                <span class="qualityItem__label">缺官网</span>
+                <span class="qualityItem__value">{{ quality.missingOfficialUrl }}</span>
+              </button>
+              <button
+                class="qualityItem qualityItem--full"
+                :class="{ 'is-warn': quality.missingResources > 0 }"
+                type="button"
+                @click="goQuality('resources')"
+              >
+                <span class="qualityItem__label">缺资源（文档/截图/链接）</span>
+                <span class="qualityItem__value">{{ quality.missingResources }}</span>
+              </button>
+            </div>
+          </div>
+        </el-card>
+      </el-col>
+    </el-row>
   </div>
 </template>
 
@@ -283,8 +430,7 @@
 import { APP_TITLE } from "@/config/brand";
 import useUserStore from "@/store/modules/user";
 import useSettingsStore from "@/store/modules/settings";
-import { listSoftwareItem } from "@/api/tool/software/item";
-import { listSoftwareCategory } from "@/api/tool/software/category";
+import { getSoftwareDashboardOverview } from "@/api/tool/software/dashboard";
 import { parseTime } from "@/utils/ruoyi";
 import * as echarts from "echarts";
 import {
@@ -354,9 +500,27 @@ const kpi = reactive({
 
 const recent = ref([]);
 const drafts = ref([]);
+const facets = reactive({
+  tags: [],
+  licenses: [],
+  authors: [],
+  teams: [],
+  platforms: [],
+});
+const quality = reactive({
+  missingIcon: 0,
+  missingLicense: 0,
+  missingOfficialUrl: 0,
+  missingShortDesc: 0,
+  missingTags: 0,
+  missingDownloads: 0,
+  missingResources: 0,
+});
+const overviewError = ref("");
 
 const healthText = computed(() => {
   if (loading.kpi || loading.recent || loading.drafts) return "同步中…";
+  if (overviewError.value) return "异常";
   return "运行中";
 });
 
@@ -381,8 +545,12 @@ function publishTagType(value) {
   return "warning";
 }
 
-function go(path) {
+function go(path, query) {
   if (!path) return;
+  if (query && typeof query === "object") {
+    router.push({ path, query });
+    return;
+  }
   router.push(path);
 }
 
@@ -392,61 +560,76 @@ function goDetail(row) {
   router.push({ path: "/software/detail", query: { softwareId } });
 }
 
-async function loadKpi() {
-  loading.kpi = true;
-  try {
-    const [totalRes, publishedRes, draftRes, offlineRes, categoryRes] =
-      await Promise.all([
-        listSoftwareItem({ pageNum: 1, pageSize: 1 }),
-        listSoftwareItem({ pageNum: 1, pageSize: 1, publishStatus: "1" }),
-        listSoftwareItem({ pageNum: 1, pageSize: 1, publishStatus: "0" }),
-        listSoftwareItem({ pageNum: 1, pageSize: 1, publishStatus: "2" }),
-        listSoftwareCategory({ pageNum: 1, pageSize: 1 }),
-      ]);
+const facetMax = computed(() => {
+  const maxOf = (list) =>
+    Math.max(
+      1,
+      ...(Array.isArray(list) ? list : []).map((x) => Number(x?.count || 0))
+    );
+  return {
+    tags: maxOf(facets.tags),
+    licenses: maxOf(facets.licenses),
+    platforms: maxOf(facets.platforms),
+  };
+});
 
-    kpi.softwareTotal = Number(totalRes?.total || 0);
-    kpi.published = Number(publishedRes?.total || 0);
-    kpi.draft = Number(draftRes?.total || 0);
-    kpi.offline = Number(offlineRes?.total || 0);
-    kpi.categories = Number(categoryRes?.total || 0);
+function facetPct(count, max) {
+  const n = Number(count || 0);
+  const m = Number(max || 1);
+  return `${Math.round((n / m) * 100)}%`;
+}
+
+function goFacet(kind, value) {
+  if (!value) return;
+  if (kind === "tag") return go("/software/item", { tag: value });
+  if (kind === "license") return go("/software/item", { license: value });
+  if (kind === "platform") return go("/software/item", { platform: value });
+}
+
+function goQuality(kind) {
+  if (kind === "downloads") return go("/software/item", { hasDownloads: "0" });
+  if (kind === "license") return go("/software/item", { hasLicense: "0" });
+  if (kind === "icon") return go("/software/item", { hasIcon: "0" });
+  if (kind === "officialUrl") return go("/software/item", { hasOfficialUrl: "0" });
+  if (kind === "shortDesc") return go("/software/item", { hasShortDesc: "0" });
+  if (kind === "tags") return go("/software/item", { hasTags: "0" });
+  if (kind === "resources") return go("/software/item", { hasResources: "0" });
+}
+
+async function loadOverview() {
+  loading.kpi = true;
+  loading.recent = true;
+  loading.drafts = true;
+  overviewError.value = "";
+  try {
+    const res = await getSoftwareDashboardOverview({ limit: 12, recentLimit: 6 });
+    const data = res?.data || {};
+    const nextKpi = data?.kpi || {};
+
+    kpi.softwareTotal = Number(nextKpi?.softwareTotal || 0);
+    kpi.published = Number(nextKpi?.published || 0);
+    kpi.draft = Number(nextKpi?.draft || 0);
+    kpi.offline = Number(nextKpi?.offline || 0);
+    kpi.categories = Number(nextKpi?.categories || 0);
+
+    recent.value = data?.recent || [];
+    drafts.value = data?.drafts || [];
+
+    Object.assign(facets, data?.facets || {});
+    Object.assign(quality, data?.quality || {});
+  } catch (e) {
+    overviewError.value = "加载失败";
+    recent.value = [];
+    drafts.value = [];
   } finally {
     loading.kpi = false;
-  }
-}
-
-async function loadRecent() {
-  loading.recent = true;
-  try {
-    const res = await listSoftwareItem({
-      pageNum: 1,
-      pageSize: 6,
-      orderByColumn: "updateTime",
-      isAsc: "desc",
-    });
-    recent.value = res?.rows || [];
-  } finally {
     loading.recent = false;
-  }
-}
-
-async function loadDrafts() {
-  loading.drafts = true;
-  try {
-    const res = await listSoftwareItem({
-      pageNum: 1,
-      pageSize: 6,
-      publishStatus: "0",
-      orderByColumn: "updateTime",
-      isAsc: "desc",
-    });
-    drafts.value = res?.rows || [];
-  } finally {
     loading.drafts = false;
   }
 }
 
 async function loadAll() {
-  await Promise.all([loadKpi(), loadRecent(), loadDrafts()]);
+  await loadOverview();
   await nextTick();
   renderStatusChart();
 }
@@ -996,6 +1179,156 @@ html.dark .kpiCard:hover {
   opacity: 0.8;
 }
 
+.facetGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.facetGroup__title {
+  margin-bottom: 8px;
+  font-size: 12px;
+  color: var(--el-text-color-regular);
+}
+
+.facetItem {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 10px 18px;
+  border: 1px solid var(--app-border);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--app-surface) 92%, var(--app-bg));
+  cursor: pointer;
+  text-align: left;
+  transition: box-shadow 200ms ease, border-color 200ms ease, transform 200ms ease;
+}
+
+.facetItem::before {
+  content: "";
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: 9px;
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.06);
+}
+
+html.dark .facetItem::before {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.facetItem::after {
+  content: "";
+  position: absolute;
+  left: 10px;
+  bottom: 9px;
+  height: 6px;
+  width: var(--pct, 0%);
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--el-color-primary) 70%, #22c55e),
+    var(--el-color-primary)
+  );
+}
+
+.facetItem--tag::after {
+  background: linear-gradient(90deg, #22c55e, color-mix(in srgb, #22c55e 35%, var(--el-color-primary)));
+}
+
+.facetItem--platform::after {
+  background: linear-gradient(90deg, #6366f1, color-mix(in srgb, #6366f1 35%, var(--el-color-primary)));
+}
+
+.facetItem:hover {
+  transform: translateY(-1px);
+  border-color: color-mix(in srgb, var(--el-color-primary) 22%, var(--app-border));
+  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.08);
+}
+
+html.dark .facetItem:hover {
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.55);
+}
+
+.facetItem:focus {
+  outline: 3px solid color-mix(in srgb, var(--el-color-primary) 18%, transparent);
+  outline-offset: 2px;
+}
+
+.facetItem__name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 650;
+}
+
+.facetItem__count {
+  flex: 0 0 auto;
+  font-family: var(--app-font-mono);
+  font-size: 12px;
+  color: var(--el-text-color-regular);
+}
+
+.qualityGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.qualityItem {
+  border: 1px solid var(--app-border);
+  border-radius: 14px;
+  padding: 12px 12px;
+  background: color-mix(in srgb, var(--app-surface) 92%, var(--app-bg));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  cursor: pointer;
+  transition: border-color 200ms ease, box-shadow 200ms ease, transform 200ms ease, background 200ms ease;
+  text-align: left;
+}
+
+.qualityItem:hover {
+  transform: translateY(-1px);
+  border-color: color-mix(in srgb, var(--el-color-primary) 20%, var(--app-border));
+  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.08);
+}
+
+html.dark .qualityItem:hover {
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.55);
+}
+
+.qualityItem.is-warn {
+  border-color: color-mix(in srgb, var(--el-color-warning) 40%, var(--app-border));
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--el-color-warning) 10%, transparent),
+    color-mix(in srgb, var(--app-surface) 92%, var(--app-bg))
+  );
+}
+
+.qualityItem__label {
+  font-size: 12px;
+  color: var(--el-text-color-regular);
+}
+
+.qualityItem__value {
+  font-size: 20px;
+  font-weight: 850;
+  letter-spacing: 0.2px;
+}
+
+.qualityItem--full {
+  grid-column: 1 / -1;
+}
+
 @media (max-width: 992px) {
   .hero {
     grid-template-columns: 1fr;
@@ -1003,6 +1336,8 @@ html.dark .kpiCard:hover {
   .hero__chips {
     justify-content: flex-start;
   }
+  .facetGrid {
+    grid-template-columns: 1fr;
+  }
 }
 </style>
-

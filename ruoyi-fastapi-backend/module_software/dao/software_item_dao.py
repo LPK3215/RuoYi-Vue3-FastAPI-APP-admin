@@ -1,6 +1,6 @@
 from typing import Any
 
-from sqlalchemy import and_, delete, exists, func, or_, select, update
+from sqlalchemy import and_, asc, delete, desc, exists, func, or_, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from common.vo import PageModel
@@ -17,6 +17,7 @@ from module_software.entity.vo.software_item_vo import (
     ToolSoftwarePageQueryModel,
     ToolSoftwareResourceModel,
 )
+from utils.common_util import SnakeCaseUtil
 from utils.page_util import PageUtil
 
 
@@ -51,6 +52,42 @@ class ToolSoftwareDao:
         keyword = (query_object.keyword or '').strip() or (query_object.software_name or '').strip()
         tag = (query_object.tag or '').strip()
         platform = (query_object.platform or '').strip()
+        has_icon = (query_object.has_icon or '').strip()
+        has_license = (query_object.has_license or '').strip()
+        has_official_url = (query_object.has_official_url or '').strip()
+        has_short_desc = (query_object.has_short_desc or '').strip()
+        has_tags = (query_object.has_tags or '').strip()
+        has_downloads = (query_object.has_downloads or '').strip()
+        has_resources = (query_object.has_resources or '').strip()
+
+        def is_blank(col: Any) -> Any:
+            return or_(col.is_(None), func.trim(col) == '')
+
+        download_exists = exists(
+            select(1)
+            .select_from(ToolSoftwareDownload)
+            .where(ToolSoftwareDownload.software_id == ToolSoftware.software_id)
+        )
+        resource_exists = exists(
+            select(1)
+            .select_from(ToolSoftwareResource)
+            .where(ToolSoftwareResource.software_id == ToolSoftware.software_id)
+        )
+
+        order_by: list[Any] = []
+        if query_object.order_by_column:
+            field_name = SnakeCaseUtil.camel_to_snake(query_object.order_by_column)
+            col = getattr(ToolSoftware, field_name, None)
+            if col is not None:
+                if query_object.is_asc == 'descending':
+                    order_by.append(desc(col))
+                    order_by.append(desc(ToolSoftware.software_id))
+                else:
+                    order_by.append(asc(col))
+                    order_by.append(asc(ToolSoftware.software_id))
+
+        if not order_by:
+            order_by = [ToolSoftware.software_sort, ToolSoftware.software_id]
         query = (
             select(ToolSoftware, ToolSoftwareCategory)
             .select_from(ToolSoftware)
@@ -71,6 +108,8 @@ class ToolSoftwareDao:
                 ToolSoftware.status == query_object.status if query_object.status else True,
                 ToolSoftware.open_source == query_object.open_source if query_object.open_source is not None else True,
                 ToolSoftware.license.like(f'%{query_object.license}%') if query_object.license else True,
+                ToolSoftware.official_url.like(f'%{query_object.official_url}%') if query_object.official_url else True,
+                ToolSoftware.repo_url.like(f'%{query_object.repo_url}%') if query_object.repo_url else True,
                 or_(
                     ToolSoftware.author.like(f'%{query_object.author}%'),
                     ToolSoftware.team.like(f'%{query_object.author}%'),
@@ -88,6 +127,17 @@ class ToolSoftwareDao:
                 )
                 if platform
                 else True,
+                (~is_blank(ToolSoftware.icon_url)) if has_icon == '1' else (is_blank(ToolSoftware.icon_url) if has_icon == '0' else True),
+                (~is_blank(ToolSoftware.license)) if has_license == '1' else (is_blank(ToolSoftware.license) if has_license == '0' else True),
+                (~is_blank(ToolSoftware.official_url))
+                if has_official_url == '1'
+                else (is_blank(ToolSoftware.official_url) if has_official_url == '0' else True),
+                (~is_blank(ToolSoftware.short_desc))
+                if has_short_desc == '1'
+                else (is_blank(ToolSoftware.short_desc) if has_short_desc == '0' else True),
+                (~is_blank(ToolSoftware.tags)) if has_tags == '1' else (is_blank(ToolSoftware.tags) if has_tags == '0' else True),
+                (download_exists) if has_downloads == '1' else ((~download_exists) if has_downloads == '0' else True),
+                (resource_exists) if has_resources == '1' else ((~resource_exists) if has_resources == '0' else True),
             )
             .join(
                 ToolSoftwareCategory,
@@ -97,7 +147,7 @@ class ToolSoftwareDao:
                 ),
                 isouter=True,
             )
-            .order_by(ToolSoftware.software_sort, ToolSoftware.software_id)
+            .order_by(*order_by)
             .distinct()
         )
         software_list: PageModel | list[list[dict[str, Any]]] = await PageUtil.paginate(
@@ -121,6 +171,54 @@ class ToolSoftwareDao:
         编辑软件数据库操作
         """
         await db.execute(update(ToolSoftware), [software])
+
+    @classmethod
+    async def batch_edit_software_dao(cls, db: AsyncSession, softwares: list[dict]) -> None:
+        """
+        批量编辑软件数据库操作
+        """
+        if not softwares:
+            return
+        await db.execute(update(ToolSoftware), softwares)
+
+    @classmethod
+    async def get_existing_software_ids(cls, db: AsyncSession, software_ids: list[int]) -> list[int]:
+        """
+        查询存在的软件ID列表（排除软删）
+        """
+        if not software_ids:
+            return []
+        rows = (
+            (
+                await db.execute(
+                    select(ToolSoftware.software_id).where(
+                        ToolSoftware.software_id.in_(software_ids), ToolSoftware.del_flag == '0'
+                    )
+                )
+            )
+            .scalars()
+            .all()
+        )
+        return list(rows or [])
+
+    @classmethod
+    async def get_software_tags_map_by_ids(cls, db: AsyncSession, software_ids: list[int]) -> dict[int, str | None]:
+        """
+        批量查询软件 tags 字段（排除软删）
+        """
+        if not software_ids:
+            return {}
+        rows = (
+            (
+                await db.execute(
+                    select(ToolSoftware.software_id, ToolSoftware.tags).where(
+                        ToolSoftware.software_id.in_(software_ids), ToolSoftware.del_flag == '0'
+                    )
+                )
+            )
+            .all()
+        )
+        return {int(software_id): tags for software_id, tags in (rows or [])}
 
     @classmethod
     async def delete_software_dao(cls, db: AsyncSession, software_id: int, update_by: str, update_time: Any) -> None:

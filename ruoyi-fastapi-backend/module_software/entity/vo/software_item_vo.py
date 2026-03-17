@@ -155,9 +155,22 @@ class ToolSoftwarePageQueryModel(ToolSoftwareQueryModel):
 
     page_num: int = Field(default=1, description='当前页码')
     page_size: int = Field(default=10, description='每页记录数')
+    order_by_column: str | None = Field(default=None, description='排序的字段名称')
+    is_asc: Literal['ascending', 'descending'] | None = Field(
+        default=None, description='排序方式（ascending升序 descending降序）'
+    )
     keyword: str | None = Field(default=None, description='关键字（名称/描述/作者/团队/许可证/标签）')
     tag: str | None = Field(default=None, description='标签（单个标签过滤）')
     platform: str | None = Field(default=None, description='平台标识（存在对应下载配置）')
+
+    # 数据质量筛选（1=有，0=无）
+    has_icon: Literal['0', '1'] | None = Field(default=None, description='是否有图标（1有 0无）')
+    has_license: Literal['0', '1'] | None = Field(default=None, description='是否有许可证（1有 0无）')
+    has_official_url: Literal['0', '1'] | None = Field(default=None, description='是否有官网地址（1有 0无）')
+    has_short_desc: Literal['0', '1'] | None = Field(default=None, description='是否有简短描述（1有 0无）')
+    has_tags: Literal['0', '1'] | None = Field(default=None, description='是否有标签（1有 0无）')
+    has_downloads: Literal['0', '1'] | None = Field(default=None, description='是否配置下载（1有 0无）')
+    has_resources: Literal['0', '1'] | None = Field(default=None, description='是否配置资源（1有 0无）')
 
 
 class DeleteToolSoftwareModel(BaseModel):
@@ -179,3 +192,37 @@ class ToolSoftwarePublishStatusModel(BaseModel):
 
     software_id: int = Field(description='软件ID')
     publish_status: Literal['0', '1', '2'] = Field(description='发布状态（0草稿 1上架 2下架）')
+
+
+class ToolSoftwareBatchPublishStatusModel(BaseModel):
+    """
+    批量修改软件发布状态模型
+    """
+
+    model_config = ConfigDict(alias_generator=to_camel)
+
+    software_ids: list[int] = Field(description='软件ID列表')
+    publish_status: Literal['0', '1', '2'] = Field(description='发布状态（0草稿 1上架 2下架）')
+
+
+class ToolSoftwareBatchMoveCategoryModel(BaseModel):
+    """
+    批量移动软件分类模型
+    """
+
+    model_config = ConfigDict(alias_generator=to_camel)
+
+    software_ids: list[int] = Field(description='软件ID列表')
+    category_id: int = Field(description='目标分类ID')
+
+
+class ToolSoftwareBatchTagsModel(BaseModel):
+    """
+    批量标签治理模型
+    """
+
+    model_config = ConfigDict(alias_generator=to_camel)
+
+    software_ids: list[int] = Field(description='软件ID列表')
+    action: Literal['append', 'remove', 'replace'] = Field(description='标签操作（append追加 remove移除 replace覆盖）')
+    tags: str | None = Field(default=None, description='标签（逗号/换行分隔；replace 允许为空表示清空）')

@@ -1,184 +1,111 @@
-# RuoYi-FastAPI-Desktop-Web 部署文档
+# DeskOps 使用端 Web（ruoyi-fastapi-desktop-web）部署文档
 
-## 项目简介
+本目录为 **独立的使用端 Web（Portal）前端**（React + TypeScript + Vite），用于对接 `ruoyi-fastapi-backend` 的 `/portal/**` 接口并渲染：
 
-基于 React + Vite + TypeScript 开发的桌面端 Web 应用。
+- 软件库（列表/筛选/详情/下载）
+- 教程/博客（文章列表/详情，Markdown 渲染 + 关联软件跳转）
+
+---
 
 ## 环境要求
 
-- **Node.js**: 18+ (推荐 20+)
-- **npm**: 9+ 或 **pnpm**: 8+ 或 **yarn**: 1.22+
+- Node.js 18+（推荐 20+）
+- npm / pnpm / yarn 任一（本项目自带 `package-lock.json`，默认按 npm 使用）
 
-## 手动部署步骤
+---
 
-### 1. 安装 Node.js
+## 本机开发
 
-从 [Node.js 官网](https://nodejs.org/) 下载并安装 LTS 版本。
-
-验证安装：
+### 1) 安装依赖
 
 ```bash
-node -v
-npm -v
-```
-
-### 2. 安装依赖
-
-```bash
-# 进入项目目录
 cd ruoyi-fastapi-desktop-web
-
-# 安装依赖（选择一种包管理器）
 npm install
-# 或
-pnpm install
-# 或
-yarn install
 ```
 
-### 3. 配置环境变量
+### 2) 配置环境变量
 
-复制 `.env.example` 文件为 `.env.development` 或 `.env.production`：
+项目提供 `.env.example`，也可直接使用默认的 `.env.development` / `.env.production`。
 
-```bash
-# Windows
-copy .env.example .env.development
-
-# Linux/Mac
-cp .env.example .env.development
-```
-
-**关键配置项**：
+关键变量（与 `vite.config.ts` 一致）：
 
 ```ini
-# 开发环境配置
-VITE_APP_BASE_API = '/dev-api'
-VITE_APP_API_URL = 'http://localhost:9099'
+VITE_APP_TITLE=DeskOps Portal
+VITE_API_BASE=/dev-api
+VITE_API_TARGET=http://127.0.0.1:9099
 ```
 
-### 4. 运行应用
+说明：
 
-#### 开发模式
+- `VITE_API_BASE`：前端请求前缀（开发环境走 Vite 代理）
+- `VITE_API_TARGET`：代理目标后端地址（仅开发环境需要）
+
+### 3) 启动
 
 ```bash
-# 启动开发服务器（支持热重载）
 npm run dev
-# 或
-pnpm dev
-# 或
-yarn dev
 ```
 
-默认访问地址：http://localhost:5173
+默认端口为 `5175`（见 `vite.config.ts`），访问：
 
-#### 生产构建
+- `http://localhost:5175`
+
+---
+
+## 生产构建 & 静态部署
+
+### 1) 构建
 
 ```bash
-# 构建生产版本
+cd ruoyi-fastapi-desktop-web
+npm ci
 npm run build
-# 或
-pnpm build
-# 或
-yarn build
 ```
 
-构建产物输出到 `dist/` 目录。
+产物目录：
 
-#### 预览生产构建
+- `ruoyi-fastapi-desktop-web/dist/`
 
-```bash
-# 本地预览生产构建
-npm run preview
-# 或
-pnpm preview
-# 或
-yarn preview
-```
+### 2) Nginx 示例（静态资源 + API 反代）
 
-### 5. 代码检查
+生产环境建议让前端直接请求 `/prod-api/**`，由 Nginx 反代到后端：
 
-```bash
-# TypeScript 类型检查
-npm run typecheck
-
-# ESLint 代码检查
-npm run lint
-```
-
-## 部署到服务器
-
-### 方式 1: 静态文件部署
-
-```bash
-# 1. 构建项目
-npm run build
-
-# 2. 将 dist/ 目录上传到 Web 服务器（Nginx/Apache）
-# 3. 配置 Web 服务器指向 dist 目录
-```
-
-### Nginx 配置示例
+- 前端 `.env.production`：`VITE_API_BASE=/prod-api`
+- 后端 `.env.prod`：`APP_ROOT_PATH='/prod-api'`
 
 ```nginx
 server {
-    listen 80;
-    server_name your-domain.com;
-    root /path/to/dist;
-    index index.html;
+  listen 80;
+  server_name your-domain.com;
 
-    location / {
-        try_files $uri $uri/ /index.html;
-    }
+  root /var/www/deskops;
+  index index.html;
 
-    # API 代理配置
-    location /dev-api/ {
-        proxy_pass http://localhost:9099/;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-    }
+  location / {
+    try_files $uri $uri/ /index.html;
+  }
+
+  location /prod-api/ {
+    proxy_pass http://127.0.0.1:9099/;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+  }
 }
 ```
 
-## 常见问题
+---
 
-### 1. 依赖安装失败
-
-```bash
-# 清除缓存后重新安装
-npm cache clean --force
-npm install
-
-# 或使用国内镜像
-npm config set registry https://registry.npmmirror.com
-npm install
-```
-
-### 2. 开发服务器启动失败
+## 代码检查
 
 ```bash
-# 检查端口是否被占用
-# Windows
-netstat -ano | findstr :5173
-
-# Linux/Mac
-lsof -i :5173
-
-# 修改 vite.config.ts 中的端口配置
+npm run typecheck
+npm run lint
 ```
 
-### 3. 构建失败
+---
 
-```bash
-# 检查 Node.js 版本是否符合要求
-node -v
+## UI 说明（下拉框）
 
-# 删除 node_modules 和 lock 文件后重新安装
-rm -rf node_modules package-lock.json
-npm install
-```
-
-## 停止服务
-
-```bash
-# 开发服务器按 Ctrl+C 停止
-```
+为避免浏览器原生 `<select>` 在不同主题/平台下样式不一致，系统内下拉框采用自绘 Select（Portal + Popover），并已修复「筛选-许可证」弹层被裁切的问题。

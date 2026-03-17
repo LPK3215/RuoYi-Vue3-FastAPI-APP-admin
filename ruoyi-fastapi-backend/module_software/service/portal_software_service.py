@@ -1,17 +1,16 @@
-from typing import Any
-
 from collections import Counter
+from typing import Any
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from common.vo import PageModel
 from exceptions.exception import ServiceException
-from module_software.dao.software_facets_dao import SoftwareFacetsDao
 from module_software.dao.portal_software_dao import (
     PortalSoftwareDao,
     PortalSoftwareDownloadDao,
     PortalSoftwareResourceDao,
 )
+from module_software.dao.software_facets_dao import SoftwareFacetsDao
 from module_software.entity.vo.portal_software_vo import (
     PortalSoftwareCategoryModel,
     PortalSoftwareDetailModel,

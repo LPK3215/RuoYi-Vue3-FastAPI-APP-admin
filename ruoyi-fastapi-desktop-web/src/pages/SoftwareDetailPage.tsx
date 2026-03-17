@@ -1,3 +1,4 @@
+import { listPortalArticle } from '@/api/portalArticle'
 import { getPortalSoftwareDetail } from '@/api/portalSoftware'
 import { Button } from '@/ui/Button'
 import { Card, CardHeader } from '@/ui/Card'
@@ -7,7 +8,7 @@ import { Spinner } from '@/ui/Spinner'
 import { useQuery } from '@tanstack/react-query'
 import clsx from 'clsx'
 import { useMemo } from 'react'
-import { useLocation, useNavigate, useParams } from 'react-router-dom'
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 
 function isGarbled(text: string) {
   return /[\uD800-\uDFFF]/.test(text)
@@ -50,6 +51,7 @@ export function SoftwareDetailPage() {
 
   const softwareId = Number(params.softwareId || '')
   const backTo = (location.state as { backTo?: string } | null)?.backTo || '/'
+  const currentBackTo = `${location.pathname}${location.search}`
 
   const detailQuery = useQuery({
     queryKey: ['portal', 'software', 'detail', softwareId],
@@ -58,6 +60,14 @@ export function SoftwareDetailPage() {
   })
 
   const data = detailQuery.data?.data
+
+  const relatedArticlesQuery = useQuery({
+    queryKey: ['portal', 'article', 'list', { pageNum: 1, pageSize: 6, softwareId }],
+    queryFn: () => listPortalArticle({ pageNum: 1, pageSize: 6, softwareId }),
+    enabled: Number.isFinite(softwareId) && softwareId > 0,
+  })
+
+  const relatedArticles = relatedArticlesQuery.data?.rows || []
 
   const downloads = useMemo(() => {
     const list = data?.downloads ? [...data.downloads] : []
@@ -250,6 +260,35 @@ export function SoftwareDetailPage() {
                     </div>
                   ) : (
                     <div className="ds-muted">暂无资源链接</div>
+                  )}
+                </div>
+              </Card>
+
+              <Card className="ds-detailCardGap">
+                <CardHeader title="相关教程" subtitle="从教程库跳转阅读" />
+                <div className="ds-detailAsideBody">
+                  {relatedArticlesQuery.isLoading ? (
+                    <div className="ds-muted">正在加载相关教程…</div>
+                  ) : relatedArticlesQuery.isError ? (
+                    <div className="ds-muted">相关教程加载失败</div>
+                  ) : relatedArticles.length ? (
+                    <div className="ds-detailResources">
+                      {relatedArticles.map((a) => (
+                        <Link
+                          key={a.articleId}
+                          to={`/article/${a.articleId}`}
+                          state={{ backTo: currentBackTo }}
+                          className={clsx('ds-detailResource')}
+                        >
+                          <div className="ds-detailResourceTitle">{safeLabel(a.title, `#${a.articleId}`)}</div>
+                          <div className="ds-detailResourceUrl ds-mono">
+                            {safeLabel(a.summary, formatDateTime(a.publishTime || a.updateTime))}
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="ds-muted">暂无相关教程</div>
                   )}
                 </div>
               </Card>

@@ -89,6 +89,62 @@ export const constantRoutes = [
 // 动态路由，基于用户权限动态去加载
 export const dynamicRoutes = [
   {
+    path: '/software/detail',
+    component: Layout,
+    hidden: true,
+    permissions: ['tool:software:item:query'],
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/tool/software/item/detail.vue'),
+        name: 'SoftwareItemDetail',
+        meta: { title: '软件详情', activeMenu: '/software/item' }
+      }
+    ]
+  },
+  {
+    path: '/software/edit',
+    component: Layout,
+    hidden: true,
+    permissions: ['tool:software:item:edit'],
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/tool/software/item/edit.vue'),
+        name: 'SoftwareItemEdit',
+        meta: { title: '编辑软件', activeMenu: '/software/item' }
+      }
+    ]
+  },
+  {
+    path: '/kb/article/detail',
+    component: Layout,
+    hidden: true,
+    permissions: ['tool:kb:article:query'],
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/tool/kb/article/detail.vue'),
+        name: 'KbArticleDetail',
+        meta: { title: '教程详情', activeMenu: '/kb/article' }
+      }
+    ]
+  },
+  {
+    path: '/kb/article/edit',
+    component: Layout,
+    hidden: true,
+    permissions: ['tool:kb:article:add', 'tool:kb:article:edit'],
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/tool/kb/article/edit.vue'),
+        name: 'KbArticleEdit',
+        meta: { title: '编辑教程', activeMenu: '/kb/article' }
+      }
+    ]
+  },
+  {
     path: '/system/user-auth',
     component: Layout,
     hidden: true,

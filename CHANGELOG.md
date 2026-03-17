@@ -1,5 +1,26 @@
 # 更新日志
 
+## DeskOps（SoftwareHub）二次开发（2026-03-16）
+
+> 说明：本段为你当前业务分支的“产品化增强”记录，不影响上游 `RuoYi-Vue3-FastAPI` 原始版本日志。
+
+### 新增/改造
+
+1. 后台首页看板：新增聚合接口 `GET /tool/software/item/overview`，并重做后台首页展示（KPI/维度分布/数据质量/最近更新/草稿待处理）。
+2. 软件列表增强：排序（`orderByColumn/isAsc`）、数据质量筛选（缺下载/缺许可证/缺图标等）、许可证/标签 facets 下拉、官网/仓库 URL 过滤、表格/卡片视图切换。
+3. 数据治理：批量上架/下架/设草稿、批量移动分类、批量标签治理（append/remove/replace，自动规范化与去重）。
+4. 导入/导出：Excel 模板下载、批量导入（支持更新已存在记录）、按筛选条件导出 Excel。
+5. 软件详情页：新增独立详情页（Markdown 预览 + 下载/资源表格 + 数据质量提示）。
+6. 主题一致性：侧边栏随暗/亮主题切换；Element Plus 下拉/Select/Dropdown 等暗亮统一；DeskOps 控制台 Select 弹层遮挡问题修复。
+7. 登录/注册页：品牌化双栏布局与更一致的暗亮视觉。
+8. Markdown 导入：介绍/使用说明支持从本地导入 `.md/.txt` 文件填充编辑框（前端读取，0 后端改动）。
+9. 教程/知识库模块：新增后端 `module_kb` + 增量 SQL `ruoyi-fastapi-kb.sql`；管理端新增“教程管理”列表/编辑页；Portal(Web)（`ruoyi-fastapi-desktop-web`）新增文章列表/详情（Markdown 渲染 + 关联软件跳转到软件详情/下载）。
+
+### 测试与文档
+
+1. 补齐/更新 API 自动化测试覆盖（overview/export/import/batch/URL 过滤等）。
+2. 更新后端/前端/根目录 README 与部署文档，统一以 DeskOps/SoftwareHub 业务视角描述。
+
 ## RuoYi-Vue3-FastAPI v1.9.0
 
 ### 项目依赖

@@ -1,18 +1,11 @@
-<h1 align="center">
-    <img alt="logo" src="https://oscimg.oschina.net/oscnet/up-d3d0a9303e11d522a06cd263f3079027715.png">
-</h1>
-<h1 align="center" style="margin: 30px 0 30px; font-weight: bold;">RuoYi-Vue3-FastAPI</h1>
-<h4 align="center">基于 RuoYi-Vue3+FastAPI 前后端分离的快速开发框架</h4>
+# DeskOps（SoftwareHub 软件库管理）
 
-> **⚠️ 二次开发声明**  
-> 本项目基于原 RuoYi-Vue3-FastAPI 框架进行二次开发，已根据实际业务需求进行了定制化修改。  
-> 原始框架地址：[Gitee](https://gitee.com/insistence2022/RuoYi-Vue3-FastAPI) | [GitHub](https://github.com/insistence/RuoYi-Vue3-FastAPI)
+本仓库是一个面向业务的“软件资源管理平台”，包含：
 
----
-
-## 核心业务：软件库管理系统（SoftwareHub）
-
-本系统是一套**软件资源管理平台**，用于管理和分发软件资源。
+- **后台管理**：分类/软件/上架下架/内容维护（`ruoyi-fastapi-frontend`）
+- **使用端 Web（Portal）**：软件库浏览/搜索/筛选/详情（`ruoyi-fastapi-desktop-web`）
+- **教程/博客（Portal）**：文章列表/详情（Markdown 渲染）+ 关联软件跳转（`ruoyi-fastapi-desktop-web`）
+- **使用端 App（可选）**：uni-app（H5/小程序/APP）（`ruoyi-fastapi-app`）
 
 ### 功能模块
 
@@ -23,6 +16,11 @@
 | 分类管理 | 软件分类的增删改查 |
 | 软件管理 | 软件基础信息、富文本说明（Markdown）、多平台下载地址管理 |
 | 上架/下架 | 控制软件资源的展示状态 |
+| 批量治理 | 批量移动分类、批量标签治理（追加/移除/覆盖） |
+| 数据质量中心 | 缺项统计 + 一键定位（缺下载/缺许可证/缺图标等） |
+| 软件详情页 | 独立详情页（Markdown 预览 + 下载/资源表格） |
+| 教程管理 | 教程/博客文章（Markdown）+ 关联软件（顺序可调） |
+| 软件导出 | 按当前筛选条件导出 Excel |
 | 展示模式 | 支持表格/卡片两种视图切换 |
 
 #### 用户端（普通用户）
@@ -32,6 +30,7 @@
 | 软件浏览 | 查看已上架的软件资源 |
 | 搜索筛选 | 按分类、名称等条件筛选软件 |
 | 软件详情 | 查看软件完整信息和下载链接 |
+| 教程文章 | 浏览已发布教程文章（Markdown 渲染，底部关联软件跳转下载） |
 
 ### 项目结构
 
@@ -39,8 +38,9 @@
 |------|------|
 | `ruoyi-fastapi-backend/` | FastAPI 后端（后台管理 API + 用户端 API） |
 | `ruoyi-fastapi-frontend/` | 后台管理系统（Vue3 + Element Plus + Vite） |
-| `ruoyi-fastapi-desktop-web/` | 桌面端 Web 应用（React + TypeScript + Vite） |
-| `ruoyi-fastapi-app/` | 用户端 App（uni-app，支持 H5/小程序/APP） |
+| `ruoyi-fastapi-desktop-web/` | 使用端 Web（Portal，React + TypeScript + Vite + 自定义 UI） |
+| `ruoyi-fastapi-app/` | 使用端 App（可选，uni-app，支持 H5/小程序/APP） |
+| `ruoyi-fastapi-test/` | 自动化测试（pytest + requests + Playwright） |
 
 ---
 
@@ -57,27 +57,36 @@
 
 ```bash
 # 1. 克隆项目
-git clone https://gitee.com/insistence2022/RuoYi-Vue3-FastAPI.git
+# git clone <your-repo-url>
 cd RuoYi-Vue3-FastAPI
 
-# 2. 启动后端
+# 2. 初始化数据库（首次必须）
+# - ruoyi-fastapi-backend/sql/ruoyi-fastapi.sql
+# - ruoyi-fastapi-backend/sql/ruoyi-fastapi-software.sql
+# - ruoyi-fastapi-backend/sql/ruoyi-fastapi-kb.sql
+
+# 3. 启动后端
 cd ruoyi-fastapi-backend
 python -m venv .venv
 .venv\Scripts\activate  # Windows
 pip install -r requirements.txt
 # 配置 .env.dev 文件（数据库、Redis）
-# 导入 SQL 文件初始化数据库
-python server.py
+python app.py --env dev
 
-# 3. 启动后台管理
+# 4. 启动后台管理（管理员端）
 cd ruoyi-fastapi-frontend
 npm install
 npm run dev
 
-# 4. 启动桌面端（可选）
+# 5. 启动使用端 Web（Portal，可选）
 cd ruoyi-fastapi-desktop-web
 npm install
 npm run dev
+
+# 6. 启动使用端 App H5（可选）
+cd ruoyi-fastapi-app
+pnpm install
+pnpm dev:h5
 ```
 
 ### 默认登录信息
@@ -95,6 +104,7 @@ npm run dev
 - [后端部署](./ruoyi-fastapi-backend/DEPLOY.md)
 - [前端部署](./ruoyi-fastapi-frontend/DEPLOY.md)
 - [桌面端部署](./ruoyi-fastapi-desktop-web/DEPLOY.md)
+- [测试说明](./ruoyi-fastapi-test/README.md)
 
 ---
 
@@ -107,7 +117,10 @@ npm run dev
 - Vue3 + Element Plus + Vite + Pinia + Vue Router
 
 **桌面端**
-- React 19 + TypeScript + Vite + TanStack Query + Ant Design
+- React 19 + TypeScript + Vite + TanStack Query + TanStack Table + 自定义 UI
+
+**测试**
+- pytest + requests + Playwright
 
 ---
 

@@ -1,3 +1,5 @@
+import socket
+
 import pytest
 from playwright.async_api import async_playwright
 
@@ -5,8 +7,6 @@ from common.config import Config
 
 
 def _is_port_open(host: str, port: int, timeout: float = 1.0) -> bool:
-    import socket
-
     try:
         with socket.create_connection((host, port), timeout=timeout):
             return True
@@ -45,8 +45,8 @@ async def test_admin_software_menu_and_list_render() -> None:
         await page.click("text=软件列表")
 
         # Search for a seeded item to make the test stable across pagination
-        await page.wait_for_selector('input[placeholder="请输入软件名称"]', timeout=15000)
-        await page.fill('input[placeholder="请输入软件名称"]', "Python")
+        await page.wait_for_selector('input[placeholder*="名称"]', timeout=15000)
+        await page.fill('input[placeholder*="名称"]', "Python")
         await page.click('button:has-text("搜索")')
 
         await page.wait_for_selector("text=Python", timeout=15000)
@@ -55,31 +55,53 @@ async def test_admin_software_menu_and_list_render() -> None:
 
 
 @pytest.mark.asyncio
-async def test_portal_h5_software_list_and_detail_render() -> None:
+async def test_portal_web_software_list_and_detail_render() -> None:
     """
-    用户端 H5：验证软件库列表页与详情页渲染（依赖 `pnpm dev:h5` 已启动）
+    使用端 Web（Portal）：验证软件库列表页与详情页渲染（依赖 `npm run dev` 已启动）
     """
-    if not _is_port_open("127.0.0.1", 9090):
-        pytest.skip("H5 server is not running on http://localhost:9090 (run `pnpm dev:h5`)")
+    if not _is_port_open("127.0.0.1", 5175):
+        pytest.skip("portal web is not running on http://localhost:5175 (run `npm run dev` in ruoyi-fastapi-desktop-web)")
 
     async with async_playwright() as p:
         browser = await p.chromium.launch(headless=True)
         page = await browser.new_page()
 
-        # Uni-app H5 default route uses hash router
-        await page.goto("http://localhost:9090/#/pages/software/index")
-        await page.wait_for_load_state("networkidle")
-
+        await page.goto("http://localhost:5175/")
         await page.wait_for_selector("text=软件库", timeout=15000)
 
         # Search keyword to make it stable
-        await page.fill('input[type="search"]', "Python")
-        await page.click('text="搜索"')
+        await page.fill('input[placeholder*="软件名称"]', "Python")
+        await page.click('button:has-text("搜索")')
         await page.wait_for_selector("text=Python", timeout=15000)
 
         # Click entry -> detail page
         await page.click("text=Python")
-        await page.wait_for_url("**/pages/software/detail**", timeout=15000)
-        await page.wait_for_selector('text=多平台下载', timeout=15000)
+        await page.wait_for_url("**/software/**", timeout=15000)
+        await page.wait_for_selector('text=下载', timeout=15000)
+
+        await browser.close()
+
+
+@pytest.mark.asyncio
+async def test_portal_web_article_list_render() -> None:
+    """
+    使用端 Web（Portal）：验证教程文章列表页可访问且能渲染（无文章时显示空状态也视为通过）
+    """
+    if not _is_port_open("127.0.0.1", 5175):
+        pytest.skip("portal web is not running on http://localhost:5175")
+
+    async with async_playwright() as p:
+        browser = await p.chromium.launch(headless=True)
+        page = await browser.new_page()
+
+        await page.goto("http://localhost:5175/articles")
+        await page.wait_for_selector("text=教程", timeout=15000)
+
+        # If there is at least one article card, click into detail and check it renders.
+        cards = await page.query_selector_all("a.ds-softCard")
+        if cards:
+            await cards[0].click()
+            await page.wait_for_url("**/article/**", timeout=15000)
+            await page.wait_for_selector("text=正文", timeout=15000)
 
         await browser.close()

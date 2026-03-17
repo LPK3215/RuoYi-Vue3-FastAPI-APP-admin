@@ -1,7 +1,30 @@
 <template>
   <div class="register">
-    <el-form ref="registerRef" :model="registerForm" :rules="registerRules" class="register-form">
-      <h3 class="title">{{ title }}</h3>
+    <div class="auth-shell">
+      <div class="auth-brand">
+        <div class="auth-brand__mark">{{ title }}</div>
+        <div class="auth-brand__sub">创建你的管理账号</div>
+        <div class="auth-brand__chips">
+          <el-tag effect="plain" size="large" class="chip">更快建档</el-tag>
+          <el-tag effect="plain" size="large" class="chip">更好治理</el-tag>
+          <el-tag effect="plain" size="large" class="chip">更稳运营</el-tag>
+        </div>
+        <div class="auth-brand__hint">
+          注册成功后即可进入后台，维护软件分类、软件条目、下载配置与资源链接。
+        </div>
+      </div>
+
+      <el-form
+        ref="registerRef"
+        :model="registerForm"
+        :rules="registerRules"
+        class="register-form"
+        @submit.prevent="handleRegister"
+      >
+        <div class="form-head">
+          <div class="form-title">注册</div>
+          <div class="form-sub">加入 {{ title }} 管理后台</div>
+        </div>
       <el-form-item prop="username">
         <el-input 
           v-model="registerForm.username" 
@@ -58,6 +81,7 @@
           size="large" 
           type="primary"
           style="width:100%;"
+          native-type="submit"
           @click.prevent="handleRegister"
         >
           <span v-if="!loading">注 册</span>
@@ -67,7 +91,8 @@
           <router-link class="link-type" :to="'/login'">使用已有账户登录</router-link>
         </div>
       </el-form-item>
-    </el-form>
+      </el-form>
+    </div>
     <!--  底部  -->
     <div class="el-register-footer">
       <span>{{ footerContent }}</span>
@@ -160,24 +185,114 @@ getCode();
 
 <style lang='scss' scoped>
 .register {
+  min-height: 100vh;
+  padding: 28px 18px 52px;
   display: flex;
-  justify-content: center;
   align-items: center;
-  height: 100%;
-  background-image: url("../assets/images/login-background.jpg");
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(900px circle at 14% 16%, rgba(14, 165, 233, 0.22), transparent 55%),
+    radial-gradient(860px circle at 84% 22%, rgba(48, 176, 143, 0.18), transparent 55%),
+    radial-gradient(900px circle at 44% 86%, rgba(254, 193, 113, 0.16), transparent 60%),
+    linear-gradient(180deg, rgba(246, 247, 251, 0.82), rgba(246, 247, 251, 0.92)),
+    url("../assets/images/login-background.jpg");
   background-size: cover;
+  background-position: center;
 }
-.title {
-  margin: 0px auto 30px auto;
-  text-align: center;
-  color: #707070;
+
+html.dark .register {
+  background:
+    radial-gradient(900px circle at 14% 16%, rgba(14, 165, 233, 0.20), transparent 55%),
+    radial-gradient(860px circle at 84% 22%, rgba(48, 176, 143, 0.18), transparent 55%),
+    radial-gradient(900px circle at 44% 86%, rgba(254, 193, 113, 0.14), transparent 60%),
+    linear-gradient(180deg, rgba(7, 10, 16, 0.84), rgba(7, 10, 16, 0.94)),
+    url("../assets/images/login-background.jpg");
+  background-size: cover;
+  background-position: center;
+}
+
+.register:before {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.06) 1px, transparent 1px, transparent 3px),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.04) 1px, transparent 1px, transparent 3px);
+  opacity: 0.32;
+  mix-blend-mode: overlay;
+}
+
+.auth-shell {
+  width: min(980px, 100%);
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 16px;
+  align-items: stretch;
+  position: relative;
+  z-index: 1;
+}
+
+@media (max-width: 920px) {
+  .auth-shell {
+    grid-template-columns: 1fr;
+  }
+}
+
+.auth-brand {
+  border-radius: 18px;
+  border: 1px solid var(--app-border);
+  background: color-mix(in srgb, var(--app-surface-2) 70%, transparent);
+  box-shadow: var(--app-shadow);
+  padding: 20px 18px 18px;
+  overflow: hidden;
+  position: relative;
+
+  @supports ((-webkit-backdrop-filter: blur(10px)) or (backdrop-filter: blur(10px))) {
+    -webkit-backdrop-filter: blur(10px) saturate(1.15);
+    backdrop-filter: blur(10px) saturate(1.15);
+  }
+}
+
+.auth-brand__mark {
+  font-size: 22px;
+  font-weight: 850;
+  letter-spacing: -0.02em;
+  color: var(--el-text-color-primary);
+}
+
+.auth-brand__sub {
+  margin-top: 6px;
+  color: var(--el-text-color-secondary);
+  font-weight: 600;
+}
+
+.auth-brand__chips {
+  margin-top: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  border-radius: 999px;
+  font-weight: 650;
+}
+
+.auth-brand__hint {
+  margin-top: 12px;
+  color: var(--el-text-color-regular);
+  line-height: 20px;
 }
 
 .register-form {
-  border-radius: 6px;
-  background: #ffffff;
-  width: 400px;
-  padding: 25px 25px 5px 25px;
+  border-radius: 18px;
+  border: 1px solid var(--app-border);
+  background: color-mix(in srgb, var(--app-surface) 92%, transparent);
+  box-shadow: var(--app-shadow);
+  padding: 18px 18px 6px;
   .el-input {
     height: 40px;
     input {
@@ -190,6 +305,26 @@ getCode();
     margin-left: 0px;
   }
 }
+
+html.dark .register-form {
+  background: var(--el-bg-color);
+}
+
+.form-head {
+  margin-bottom: 14px;
+}
+
+.form-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--el-text-color-primary);
+}
+
+.form-sub {
+  margin-top: 4px;
+  color: var(--el-text-color-secondary);
+}
+
 .register-tip {
   font-size: 13px;
   text-align: center;
@@ -212,9 +347,10 @@ getCode();
   width: 100%;
   text-align: center;
   color: #fff;
-  font-family: Arial;
+  font-family: var(--app-font-sans);
   font-size: 12px;
   letter-spacing: 1px;
+  opacity: 0.88;
 }
 .register-code-img {
   height: 40px;

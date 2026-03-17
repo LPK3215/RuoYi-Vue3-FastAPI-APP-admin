@@ -84,7 +84,7 @@
     .sub-menu-title-noDropdown,
     .el-sub-menu__title {
       &:hover {
-        background-color: rgba(0, 0, 0, 0.06) !important;
+        background-color: var(--menu-hover) !important;
       }
     }
 
@@ -97,7 +97,7 @@
       min-width: vars.$base-sidebar-width !important;
 
       &:hover {
-        background-color: rgba(0, 0, 0, 0.06) !important;
+        background-color: var(--menu-hover) !important;
       }
     }
 
@@ -213,7 +213,7 @@
   .el-menu-item {
     &:hover {
       // you can use $sub-menuHover
-      background-color: rgba(0, 0, 0, 0.06) !important;
+      background-color: var(--menu-hover) !important;
     }
   }
 
@@ -223,7 +223,7 @@
     overflow-y: auto;
 
     &::-webkit-scrollbar-track-piece {
-      background: #d3dce6;
+      background: var(--scrollbar-track);
     }
 
     &::-webkit-scrollbar {
@@ -231,8 +231,12 @@
     }
 
     &::-webkit-scrollbar-thumb {
-      background: #99a9bf;
+      background: var(--scrollbar-thumb);
       border-radius: 20px;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+      background: var(--scrollbar-thumb-hover);
     }
   }
 }

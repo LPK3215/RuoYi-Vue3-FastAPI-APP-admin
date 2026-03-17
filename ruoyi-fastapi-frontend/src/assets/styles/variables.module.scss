@@ -89,9 +89,9 @@ $--color-info: #909399;
   --el-bg-color-page: var(--app-bg);
 
   /* 亮色模式变量 */
-  --sidebar-bg: #{$menuBg};
-  --sidebar-text: #{$menuText};
-  --menu-hover: #{$menuHover};
+  --sidebar-bg: #{$menuLightBg};
+  --sidebar-text: #{$menuLightText};
+  --menu-hover: #{$menuLightHover};
   --menu-active-text: var(--el-color-primary);
   
   --navbar-bg: #ffffff;
@@ -277,11 +277,6 @@ html.dark {
     }
   }
   
-  /* 下拉菜单样式覆盖 */
-  .el-dropdown-menu__item:not(.is-disabled):focus, .el-dropdown-menu__item:not(.is-disabled):hover{
-    background-color: var(--navbar-hover) !important;
-  }
-
   /* blockquote样式覆盖 */
   blockquote {
     background-color: var(--blockquote-bg) !important;

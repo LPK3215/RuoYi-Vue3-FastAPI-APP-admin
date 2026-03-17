@@ -1,115 +1,113 @@
-# RuoYi-Vue3-FastAPI 项目测试套件
+# SoftwareHub 测试套件（ruoyi-fastapi-test）
 
-这是一个为 RuoYi-Vue3-FastAPI 项目创建的完整测试套件，使用 Playwright 进行端到端测试。测试环境已禁用验证码功能，以简化测试流程。
+本目录为 **自动化测试套件**，包含：
 
-## 功能特性
+- API 测试（`requests`）
+- UI/E2E 测试（Playwright）
 
-- 使用默认方式手动启动前后端服务或`Docker Compose`自动启动项目前后端服务
-- 测试环境已禁用验证码功能
-- 验证登录流程和认证机制
-- 测试所有受保护的页面功能
-- 验证未登录用户访问受保护页面时的重定向行为
+> 部分 UI 测试会在端口未启动时自动 `skip`，避免在未启动服务的情况下误报失败。
+
+---
 
 ## 依赖安装
 
+建议使用 Python 3.10+。
+
 ```bash
+cd ruoyi-fastapi-test
 pip install -r requirements.txt
 playwright install
 ```
 
-## 使用方法
+---
 
-### 方式一：默认方法
+## 本机运行（推荐）
 
-#### 启动前端
+### 1) 启动后端
+
+按后端说明启动：`../ruoyi-fastapi-backend/README.md`
+
+默认：
+
+- API：`http://127.0.0.1:9099`
+
+> 如需禁用验证码，可参考 `disable_captcha.sql` 或按你的测试环境配置处理。
+
+### 2) 启动管理端（可选：用于 UI 测试）
 
 ```bash
-cd ruoyi-fastapi-frontend
+cd ../ruoyi-fastapi-frontend
 npm install
 npm run dev
 ```
 
-#### 启动后端
+默认：
+
+- 管理端：`http://localhost:80`
+
+### 3) 启动使用端 Web（Portal，可选：用于 UI 测试）
 
 ```bash
-cd ruoyi-fastapi-backend
-pip install -r requirements.txt
-python app.py --env=dev
+cd ../ruoyi-fastapi-desktop-web
+npm install
+npm run dev
 ```
 
-#### 运行测试
+默认：
+
+- Portal Web：`http://localhost:5175`
+
+### 3.1) 启动使用端 H5（可选：用于 UI 测试）
 
 ```bash
-cd ruoyi-fastapi-test
-pip install -r requirements.txt
+cd ../ruoyi-fastapi-app
+pnpm install
+pnpm dev:h5
+```
+
+默认：
+
+- H5：`http://localhost:9090`
+
+### 4) 运行测试
+
+```bash
+cd ../ruoyi-fastapi-test
 python -m pytest -v
 ```
 
-### 方式二：使用Docker
+---
 
-#### 进入测试目录
+## Docker 方式（可选）
+
+进入测试目录：
 
 ```bash
 cd ruoyi-fastapi-test
 ```
 
-#### 启动 Docker 服务
+启动服务（MySQL / PostgreSQL 二选一）：
 
 ```bash
-# MySQL版本
 docker compose -f docker-compose.test.my.yml up -d --build
-# PostgreSQL版本
+# 或
 docker compose -f docker-compose.test.pg.yml up -d --build
 ```
 
-#### 运行测试
+运行测试：
 
 ```bash
 pip install -r requirements.txt
 python -m pytest -v
 ```
 
-## 测试内容
+---
 
-### 登录测试
+## 测试说明
 
-- 验证登录页面正常加载
-- 验证登录流程（测试环境已禁用验证码）
-- 测试认证后的页面访问
-
-### 页面访问和功能测试
-
-- 仪表盘页面
-- 用户管理页面
-- 角色管理页面
-- 菜单管理页面
-- 部门管理页面
-- 岗位管理页面
-- 字典管理页面
-- 参数配置页面
-- 通知公告页面
-- 日志管理页面（操作日志、登录日志）
-- 在线用户页面
-- 定时任务页面
-- 服务监控页面
-- 数据监控页面
-- 缓存监控页面
-- 缓存列表页面
-- 代码生成页面
-- 系统接口页面
-
-### 认证测试
-
-- 验证未登录用户访问受保护页面时被重定向到登录页
-- 验证登录后可以访问受保护页面
-
-## 配置说明
-
-使用 `docker-compose.test.my.yml`或`docker-compose.test.pg.yml`启动服务，默认前端端口为 `80`，后端端口为 `9099`。测试环境已禁用验证码功能。
-
-## 注意事项
-
-1. 确保系统已安装 Docker 和 Docker Compose
-2. 确保端口 `80` 和 `9099` 未被占用
-3. 首次运行时 Docker 镜像构建可能需要几分钟时间
-4. 测试使用默认管理员账户：用户名 `admin`，密码 `admin123`
+- 默认管理员账号：`admin / admin123`（由初始化 SQL 提供）
+- 软件库相关测试依赖“种子数据”（例如 `softwareId=20001` 的 Python 条目）
+- UI 测试会检查端口是否可访问，不满足条件会 `skip`：
+  - 管理端 UI：`localhost:80`
+  - Portal Web：`localhost:5175`
+  - Portal H5：`localhost:9090`

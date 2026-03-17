@@ -1,11 +1,13 @@
 from __future__ import annotations
 
-from typing import Any, Literal
+from typing import TYPE_CHECKING, Any, Literal
 
 from sqlalchemy import and_, func, select
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from module_software.entity.do.software_do import ToolSoftware, ToolSoftwareDownload
+
+if TYPE_CHECKING:
+    from sqlalchemy.ext.asyncio import AsyncSession
 
 FacetMode = Literal['tool', 'portal']
 

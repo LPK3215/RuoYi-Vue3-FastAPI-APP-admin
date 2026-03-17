@@ -479,11 +479,22 @@ a {
   transition: border-color 140ms ease, box-shadow 140ms ease, background 140ms ease;
 }
 
-/* Native <select> dropdown menu colors (Windows/Chromium defaults are often white). */
+/* Select (custom) trigger */
 .ds-select {
-  color-scheme: dark;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+  user-select: none;
+  -webkit-appearance: none;
+  appearance: none;
 }
 
+/* Native <select> dropdown menu colors (legacy fallback) */
 .ds-select option {
   background: #0b0f14;
   color: rgba(229, 231, 235, 0.92);
@@ -491,6 +502,127 @@ a {
 
 .ds-select option:disabled {
   color: rgba(229, 231, 235, 0.45);
+}
+
+.ds-selectValue {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ds-selectChevron {
+  opacity: 0.72;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  transition: transform 160ms ease, opacity 160ms ease;
+}
+
+.ds-select--open .ds-selectChevron {
+  transform: rotate(180deg);
+  opacity: 0.9;
+}
+
+/* Select (custom) popover */
+.ds-selectPopover {
+  position: fixed;
+  z-index: 9999;
+  padding: 6px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background:
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.06), transparent 18%),
+    rgba(14, 18, 26, 0.94);
+  box-shadow: var(--shadow);
+}
+
+@supports ((-webkit-backdrop-filter: blur(10px)) or (backdrop-filter: blur(10px))) {
+  .ds-selectPopover {
+    -webkit-backdrop-filter: blur(14px) saturate(1.1);
+    backdrop-filter: blur(14px) saturate(1.1);
+  }
+}
+
+.ds-selectMenu {
+  display: grid;
+  gap: 4px;
+  max-height: var(--ds-select-max-h, 320px);
+  overflow: auto;
+  scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
+  scrollbar-width: thin;
+}
+
+.ds-selectMenu::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.ds-selectMenu::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.16);
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background-clip: padding-box;
+}
+
+.ds-selectMenu::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.22);
+  background-clip: padding-box;
+}
+
+.ds-selectMenu::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.ds-selectOption {
+  height: 36px;
+  padding: 0 10px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: rgba(229, 231, 235, 0.92);
+  cursor: pointer;
+  font: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  transition: border-color 140ms ease, background 140ms ease, transform 140ms ease;
+}
+
+.ds-selectOption.is-active,
+.ds-selectOption:hover:not(:disabled) {
+  border-color: rgba(124, 255, 107, 0.22);
+  background: rgba(124, 255, 107, 0.08);
+}
+
+.ds-selectOption.is-selected {
+  border-color: rgba(124, 255, 107, 0.32);
+  background: linear-gradient(135deg, rgba(124, 255, 107, 0.18), rgba(62, 166, 255, 0.10));
+}
+
+.ds-selectOption:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.ds-selectOptionText {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ds-selectOptionMark {
+  font-family: var(--mono);
+  opacity: 0.9;
+}
+
+.ds-selectEmpty {
+  padding: 10px 10px;
+  color: rgba(229, 231, 235, 0.62);
+  font-size: 13px;
 }
 
 .ds-input:focus,
@@ -988,6 +1120,12 @@ a {
   gap: 12px;
 }
 
+.ds-portalNav {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .ds-portalHeaderHint {
   color: rgba(229, 231, 235, 0.62);
   font-size: 12px;
@@ -1057,6 +1195,11 @@ a {
   display: grid;
   grid-template-columns: 1fr auto;
   align-items: end;
+  gap: 10px;
+}
+
+.ds-portalSearchFields {
+  display: grid;
   gap: 10px;
 }
 
@@ -1145,6 +1288,10 @@ a {
   padding: 12px 12px 14px;
   display: grid;
   gap: 8px;
+}
+
+.ds-portalAsideCard {
+  overflow: visible;
 }
 
 .ds-catItem {

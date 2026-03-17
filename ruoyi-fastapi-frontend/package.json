@@ -1,7 +1,7 @@
 {
   "name": "vfadmin",
   "version": "1.9.0",
-  "description": "软件管理后台",
+  "description": "DeskOps 软件库管理后台",
   "author": "insistence",
   "license": "MIT",
   "type": "module",

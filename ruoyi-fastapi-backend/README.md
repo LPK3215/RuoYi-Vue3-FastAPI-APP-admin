@@ -23,6 +23,7 @@
 2. 依次导入 SQL：
    - 基础表/权限/字典：`sql/ruoyi-fastapi.sql`
    - 软件库业务表 + 菜单：`sql/ruoyi-fastapi-software.sql`
+   - 教程/知识库（文章 + 关联软件 + 菜单）：`sql/ruoyi-fastapi-kb.sql`
 
 > 如果你是“已有库升级”，并且只想同步软件菜单顺序/授权，可单独执行：`sql/ruoyi-fastapi-software-menu-migrate.sql`。
 
@@ -71,6 +72,155 @@ python app.py --env dev
 - Swagger：`http://127.0.0.1:9099/docs`
 
 ---
+
+## SoftwareHub（软件库）接口增强（后台）
+
+### 1) 首页看板（聚合接口）
+
+用于后台首页展示 KPI/维度分布/数据质量/最近更新/草稿待处理：
+
+- `GET /tool/software/item/overview?limit=12&recentLimit=6`
+
+### 1.1) 筛选项聚合（facets）
+
+用于构建后台筛选 UI（标签/许可证/作者/平台等）：
+
+- `GET /tool/software/item/facets?limit=50`
+
+### 2) 软件列表排序（list 接口）
+
+`/tool/software/item/list` 支持排序参数：
+
+- `orderByColumn`：例如 `updateTime`
+- `isAsc`：`ascending` / `descending`
+
+示例：
+
+- `GET /tool/software/item/list?pageNum=1&pageSize=10&orderByColumn=updateTime&isAsc=descending`
+
+### 3) 数据质量筛选（list 接口）
+
+`/tool/software/item/list` 支持“缺字段/缺配置”的快速筛选（1=有，0=无）：
+
+- `hasDownloads` / `hasLicense` / `hasIcon` / `hasOfficialUrl` / `hasShortDesc` / `hasTags` / `hasResources`
+
+示例：
+
+- 缺下载：`hasDownloads=0`
+- 缺许可证：`hasLicense=0`
+
+---
+
+### 3.1) URL 精准筛选（list 接口）
+
+`/tool/software/item/list` 支持按 URL 过滤（便于重复治理/快速定位）：
+
+- `officialUrl`：官网地址（模糊匹配）
+- `repoUrl`：仓库地址（模糊匹配）
+
+---
+
+### 4) 导出软件列表（Excel）
+
+用于按当前筛选条件导出软件列表（Excel）：
+
+- `POST /tool/software/item/export`
+
+说明：
+
+- 请求体为 `application/x-www-form-urlencoded`（与前端通用 `proxy.download` 保持一致）
+- 可传入与 `/tool/software/item/list` 相同的筛选参数（含数据质量筛选）
+- 响应为 `application/octet-stream` 的流式 Excel 文件
+
+---
+
+### 5) 批量上架/下架（发布状态）
+
+- `PUT /tool/software/item/batchChangePublishStatus`
+
+请求示例（JSON）：
+
+```json
+{
+  "softwareIds": [1, 2, 3],
+  "publishStatus": "1"
+}
+```
+
+其中 `publishStatus`：`0` 草稿 / `1` 上架 / `2` 下架。
+
+---
+
+### 6) 批量移动分类
+
+- `PUT /tool/software/item/batchMoveCategory`
+
+请求示例（JSON）：
+
+```json
+{
+  "softwareIds": [1, 2, 3],
+  "categoryId": 100
+}
+```
+
+---
+
+### 7) 批量标签治理（追加/移除/覆盖）
+
+- `PUT /tool/software/item/batchManageTags`
+
+请求示例（JSON）：
+
+```json
+{
+  "softwareIds": [1, 2, 3],
+  "action": "append",
+  "tags": "cli,dev\nops"
+}
+```
+
+其中 `action`：
+
+- `append`：追加（去重）
+- `remove`：移除
+- `replace`：覆盖（允许 tags 为空表示清空）
+
+---
+
+### 8) 导入软件（Excel）
+
+用于批量导入软件基础信息（不含下载/资源明细）：
+
+- `POST /tool/software/item/importTemplate`：下载导入模板
+- `POST /tool/software/item/importData?updateSupport=0|1`：上传 Excel 批量导入
+
+说明：
+
+- 若填写“软件ID”，则按软件ID更新（需要 `updateSupport=1`）
+- 未填写“软件ID”，按新增处理
+
+---
+
+## 教程/知识库（KB）模块
+
+> 用于“对外展示”的教程/博客文章：文章内容为 Markdown，并可关联多个软件（Portal 详情页会展示关联软件并跳转到软件下载页）。
+>
+> Portal 展示侧当前由 `ruoyi-fastapi-desktop-web` 通过 `/portal/article/**` 接口拉取数据并渲染（无需登录）。
+
+### 1) 管理端接口（需要登录）
+
+- `GET /tool/kb/article/list`：分页列表（支持 keyword/tag/publishStatus/status）
+- `GET /tool/kb/article/{articleId}`：详情（含 `softwareIds`）
+- `POST /tool/kb/article`：新增
+- `PUT /tool/kb/article`：更新
+- `PUT /tool/kb/article/changePublishStatus`：发布/下线/草稿
+- `DELETE /tool/kb/article/{articleIds}`：删除（软删，逗号分隔）
+
+### 2) Portal 接口（公开）
+
+- `GET /portal/article/list`：分页列表（仅返回“已发布/正常/未删除”）
+- `GET /portal/article/{articleId}`：详情（仅返回“已发布/正常/未删除”，并包含“已上架”的关联软件列表）
 
 ## 部署（非 Docker）
 
@@ -162,4 +312,3 @@ server {
 ### 2) 改了代码但接口没变化
 
 `.env.dev` 默认 `APP_RELOAD = false`，需要手动重启后端进程。
-

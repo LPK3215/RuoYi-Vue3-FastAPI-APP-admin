@@ -119,7 +119,7 @@ const permissionStore = usePermissionStore()
 const showSettings = ref(false);
 const navType = ref(settingsStore.navType)
 const theme = ref(settingsStore.theme);
-const sideTheme = ref(settingsStore.sideTheme);
+const sideTheme = computed(() => settingsStore.sideTheme);
 const storeSettings = computed(() => settingsStore);
 const predefineColors = ref(["#0ea5e9", "#6366f1", "#22c55e", "#f97316", "#f59e0b", "#ef4444", "#14b8a6", "#a855f7"]);
 
@@ -134,8 +134,7 @@ function themeChange(val) {
 }
 
 function handleTheme(val) {
-  settingsStore.sideTheme = val;
-  sideTheme.value = val;
+  settingsStore.setThemeMode(val === 'theme-dark')
 }
 
 function handleNavType(val) {

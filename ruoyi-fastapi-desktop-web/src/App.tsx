@@ -2,6 +2,8 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 import { RequireAuth } from './auth/RequireAuth'
 import { PortalLayout } from './layout/PortalLayout'
 import { ShellLayout } from './layout/ShellLayout'
+import { ArticleDetailPage } from './pages/ArticleDetailPage'
+import { ArticleHubPage } from './pages/ArticleHubPage'
 import { DashboardPage } from './pages/DashboardPage'
 import { LoginPage } from './pages/LoginPage'
 import { SoftwareDetailPage } from './pages/SoftwareDetailPage'
@@ -14,6 +16,8 @@ export default function App() {
       {/* Public portal (no login required) */}
       <Route path="/" element={<PortalLayout />}>
         <Route index element={<SoftwareHubPage />} />
+        <Route path="articles" element={<ArticleHubPage />} />
+        <Route path="article/:articleId" element={<ArticleDetailPage />} />
         <Route path="software/:softwareId" element={<SoftwareDetailPage />} />
       </Route>
 
